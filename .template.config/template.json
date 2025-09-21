@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Julio Casal",
+    "classifications": [        
+        "Web",
+        "Web API",
+        "API",
+        "Service",
+        "Cloud",
+        ".NET Aspire",
+        "Test"        
+    ],
+    "identity": "Backend.Blueprint",
+    "name": ".NET Backend Blueprint",
+    "shortName": "backend-blueprint",
+    "description": "A complete blueprint for .NET backends.",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    },
+    "sourceName": "TemplateApp",
+    "preferNameDirectory": true,
+    "symbols": {
+        "ProjectNameLower": {
+            "type": "derived",
+            "valueSource": "name",
+            "valueTransform": "lowerCase",
+            "replaces": "templateapp",
+            "fileRename": "templateapp"
+        }
+    },
+    "primaryOutputs": [
+        {
+            "path": "src/{{ProjectName}}.Api/{{ProjectName}}.Api.csproj"
+        },
+        {
+            "path": "src/{{ProjectName}}.AppHost/{{ProjectName}}.AppHost.csproj"
+        },
+        {
+            "path": "src/{{ProjectName}}.ServiceDefaults/{{ProjectName}}.ServiceDefaults.csproj"
+        }
+    ]
+}
