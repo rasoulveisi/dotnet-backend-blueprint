@@ -58,7 +58,6 @@ public static class CreateItemEndpoint
                 ));
         })
         .WithParameterValidation()
-        .RequireAuthorization()
         .Produces<ItemDetailsDto>(StatusCodes.Status201Created)
         .ProducesValidationProblem()
         .Produces(StatusCodes.Status401Unauthorized);

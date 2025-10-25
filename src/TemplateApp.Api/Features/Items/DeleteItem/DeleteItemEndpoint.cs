@@ -17,7 +17,6 @@ public static class DeleteItemEndpoint
 
             return Results.NoContent();
         })
-        .RequireAuthorization()
         .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status401Unauthorized);
     }

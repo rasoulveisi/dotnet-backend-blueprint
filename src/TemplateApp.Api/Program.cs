@@ -55,19 +55,28 @@ builder.Services.AddProblemDetails()
                 .AddExceptionHandler<GlobalExceptionHandler>();
 
 // Configure authentication options with validation
-builder.Services.AddOptions<AuthOptions>()
-                .Bind(builder.Configuration.GetSection(AuthOptions.SectionName))
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+if (builder.Environment.IsProduction())
+{
+    // Production mode - disable authentication for now
+    Console.WriteLine("Production mode - Authentication disabled");
+}
+else
+{
+    // Development mode - use full authentication
+    builder.Services.AddOptions<AuthOptions>()
+                    .Bind(builder.Configuration.GetSection(AuthOptions.SectionName))
+                    .ValidateDataAnnotations()
+                    .ValidateOnStart();
 
-// Register the JWT Bearer options configurator first
-builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
+    // Register the JWT Bearer options configurator first
+    builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
 
-// Then add the authentication services
-builder.Services.AddAuthentication()
-                .AddJwtBearer();
+    // Then add the authentication services
+    builder.Services.AddAuthentication()
+                    .AddJwtBearer();
 
-builder.Services.AddAuthorizationBuilder();
+    builder.Services.AddAuthorizationBuilder();
+}
 
 builder.Services.AddHttpLogging(options =>
 {

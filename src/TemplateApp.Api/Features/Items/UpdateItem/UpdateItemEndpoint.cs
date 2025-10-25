@@ -42,7 +42,6 @@ public static class UpdateItemEndpoint
             return Results.NoContent();
         })
         .WithParameterValidation()
-        .RequireAuthorization()
         .Produces(StatusCodes.Status204NoContent)
         .ProducesValidationProblem()
         .Produces(StatusCodes.Status401Unauthorized)
