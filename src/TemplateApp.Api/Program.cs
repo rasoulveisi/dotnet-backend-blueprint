@@ -109,9 +109,6 @@ else
     app.MapDefaultEndpoints();
 }
 
-// Add explicit OPTIONS handling for CORS
-app.MapMethods("/{*path}", new[] { "OPTIONS" }, () => Results.Ok()).AllowAnonymous();
-
 app.MapItems();
 app.MapCategories();
 

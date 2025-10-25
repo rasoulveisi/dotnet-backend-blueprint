@@ -11,9 +11,40 @@ public static class CorsExtensions
             options.AddDefaultPolicy(
                 policy =>
                 {
-                    // Temporarily allow all origins for debugging
-                    Console.WriteLine("CORS - Allowing all origins for debugging");
-                    policy.AllowAnyOrigin();
+                    // if (builder.Environment.IsDevelopment())
+                    // {
+                    //     policy.AllowAnyOrigin();
+                    // }
+                    // else
+                    // {
+                    //     // Try to get AllowedOrigins as an array first
+                    //     var allowedOriginsArray = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+                        
+                    //     if (allowedOriginsArray != null && allowedOriginsArray.Length > 0)
+                    //     {
+                    //         Console.WriteLine($"CORS - Allowed origins (array): {string.Join(", ", allowedOriginsArray)}");
+                    //         policy.WithOrigins(allowedOriginsArray);
+                    //     }
+                    //     else
+                    //     {
+                    //         // Fallback: try string format
+                    //         var originsString = builder.Configuration["AllowedOrigins"] ?? string.Empty;
+                    //         Console.WriteLine($"CORS - AllowedOrigins (string): {originsString}");
+                            
+                    //         if (!string.IsNullOrEmpty(originsString))
+                    //         {
+                    //             var allowedOrigins = originsString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    //             Console.WriteLine($"CORS - Allowed origins (parsed): {string.Join(", ", allowedOrigins)}");
+                    //             policy.WithOrigins(allowedOrigins);
+                    //         }
+                    //         else
+                    //         {
+                    //             Console.WriteLine("CORS - No whitelist configured, allowing all origins");
+                                // Fallback: allow all origins if no whitelist is configured
+                                policy.AllowAnyOrigin();
+                    //         }
+                    //     }
+                    // }
 
                     policy.WithHeaders(
                             HeaderNames.Authorization, 
@@ -24,7 +55,7 @@ public static class CorsExtensions
                             "Access-Control-Request-Method",
                             "Access-Control-Request-Headers"
                         )
-                        .AllowAnyMethod()
+                          .AllowAnyMethod()
                         .AllowCredentials()
                         .SetIsOriginAllowed(origin => 
                         {
