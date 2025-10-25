@@ -55,8 +55,7 @@ public static class CorsExtensions
                             "Access-Control-Request-Method",
                             "Access-Control-Request-Headers"
                         )
-                        .AllowAnyMethod()
-                        .AllowCredentials();
+                        .AllowAnyMethod();
                 });
         });
 
