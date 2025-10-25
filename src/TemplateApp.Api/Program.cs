@@ -115,11 +115,10 @@ app.MapCategories();
 
 app.UseHttpLogging();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseTemplateAppSwaggerUI();
-}
-else
+// Enable Swagger in both development and production
+app.UseTemplateAppSwaggerUI();
+
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler();
 }
