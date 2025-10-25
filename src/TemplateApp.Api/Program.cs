@@ -7,20 +7,32 @@ using TemplateApp.Api.Shared.OpenApi;
 using TemplateApp.Api.Shared.Authentication;
 using Microsoft.AspNetCore.HttpLogging;
 using TemplateApp.Api.Features.Categories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+// Check if we're running in production (Railway) or development (Aspire)
+if (builder.Environment.IsProduction())
+{
+    // Production mode - use connection string
+    builder.Services.AddDbContext<TemplateAppContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("TemplateAppDB")));
+}
+else
+{
+    // Development mode - use Aspire
+    builder.AddServiceDefaults();
+    
+    var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+    {
+        ManagedIdentityClientId = builder.Configuration["AZURE_CLIENT_ID"]
+    });
+
+    builder.AddTemplateAppNpgsql<TemplateAppContext>("TemplateAppDB", credential);
+}
 
 builder.Services.AddProblemDetails()
                 .AddExceptionHandler<GlobalExceptionHandler>();
-
-var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
-{
-    ManagedIdentityClientId = builder.Configuration["AZURE_CLIENT_ID"]
-});
-
-builder.AddTemplateAppNpgsql<TemplateAppContext>("TemplateAppDB", credential);
 
 // Configure authentication options with validation
 builder.Services.AddOptions<AuthOptions>()
@@ -47,7 +59,6 @@ builder.Services.AddHttpLogging(options =>
 });
 
 builder.AddTemplateAppOpenApi();
-
 builder.AddTemplateAppCors();
 
 var app = builder.Build();
@@ -71,6 +82,7 @@ else
 
 app.UseStatusCodePages();
 
+// Run database migrations
 await app.MigrateDbAsync();
 
 app.Run();

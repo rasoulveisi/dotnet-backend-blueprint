@@ -14,19 +14,29 @@ public static class DataExtensions
     {
         if (builder.Environment.IsProduction())
         {
-            builder.AddAzureNpgsqlDbContext<TContext>(
-                connectionStringName,
-                settings => settings.Credential = credential,
-                configureDbContextOptions: options =>
-                    ConfigureDbContext(options)
-            );
+            // Production mode - use connection string
+            builder.Services.AddDbContext<TContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString(connectionStringName)));
         }
         else
         {
-            builder.AddNpgsqlDbContext<TContext>(
-                connectionStringName,
-                configureDbContextOptions: options =>
-                    ConfigureDbContext(options));
+            // Development mode - use Aspire
+            if (builder.Environment.IsProduction())
+            {
+                builder.AddAzureNpgsqlDbContext<TContext>(
+                    connectionStringName,
+                    settings => settings.Credential = credential,
+                    configureDbContextOptions: options =>
+                        ConfigureDbContext(options)
+                );
+            }
+            else
+            {
+                builder.AddNpgsqlDbContext<TContext>(
+                    connectionStringName,
+                    configureDbContextOptions: options =>
+                        ConfigureDbContext(options));
+            }
         }
 
         return builder;
