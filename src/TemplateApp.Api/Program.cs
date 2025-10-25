@@ -8,6 +8,8 @@ using TemplateApp.Api.Shared.Authentication;
 using Microsoft.AspNetCore.HttpLogging;
 using TemplateApp.Api.Features.Categories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,10 @@ if (builder.Environment.IsProduction())
     // Production mode - use connection string
     builder.Services.AddDbContext<TemplateAppContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("TemplateAppDB")));
+    
+    // Add health checks for production
+    builder.Services.AddHealthChecks()
+        .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 }
 else
 {
@@ -65,7 +71,22 @@ var app = builder.Build();
 
 app.UseCors();
 
-app.MapDefaultEndpoints();
+// Map endpoints conditionally
+if (builder.Environment.IsProduction())
+{
+    // Production health checks
+    app.MapHealthChecks("/health/ready");
+    app.MapHealthChecks("/health/alive", new HealthCheckOptions
+    {
+        Predicate = r => r.Tags.Contains("live")
+    });
+}
+else
+{
+    // Development - use Aspire endpoints
+    app.MapDefaultEndpoints();
+}
+
 app.MapItems();
 app.MapCategories();
 
