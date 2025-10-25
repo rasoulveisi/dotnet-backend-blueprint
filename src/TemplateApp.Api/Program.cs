@@ -17,8 +17,11 @@ var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsProduction())
 {
     // Production mode - use connection string
+    var connectionString = builder.Configuration.GetConnectionString("TemplateAppDB");
+    Console.WriteLine($"Production mode - Connection string: {connectionString}");
+    
     builder.Services.AddDbContext<TemplateAppContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("TemplateAppDB")));
+        options.UseNpgsql(connectionString));
     
     // Add health checks for production
     builder.Services.AddHealthChecks()
