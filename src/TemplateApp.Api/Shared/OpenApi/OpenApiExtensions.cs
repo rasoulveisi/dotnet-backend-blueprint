@@ -68,22 +68,35 @@ public static class OpenApiExtensions
     {
         app.MapOpenApi();
 
-        var authOptions = app.Services.GetRequiredService<IOptions<AuthOptions>>().Value;
-
-        var swaggerUiClientId = app.Configuration["SWAGGERUI_CLIENTID"]
-                                ?? throw new InvalidOperationException("SWAGGERUI_CLIENTID is not configured");
-
-        app.UseSwaggerUI(options =>
+        // Check if we're in production mode (no authentication)
+        var isProduction = app.Environment.IsProduction();
+        
+        if (isProduction)
         {
-            options.SwaggerEndpoint("/openapi/v1.json", "TemplateApp API v1");
+            // Production mode - simple Swagger UI without authentication
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/openapi/v1.json", "TemplateApp API v1");
+                options.RoutePrefix = "swagger";
+            });
+        }
+        else
+        {
+            // Development mode - Swagger UI with Keycloak authentication
+            var authOptions = app.Services.GetRequiredService<IOptions<AuthOptions>>().Value;
 
-            options.OAuthClientId(swaggerUiClientId);
+            var swaggerUiClientId = app.Configuration["SWAGGERUI_CLIENTID"]
+                                    ?? throw new InvalidOperationException("SWAGGERUI_CLIENTID is not configured");
 
-            options.OAuthUsePkce();
-            options.OAuthScopes(authOptions.ApiScope);
-
-            options.EnablePersistAuthorization();
-        });
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/openapi/v1.json", "TemplateApp API v1");
+                options.OAuthClientId(swaggerUiClientId);
+                options.OAuthUsePkce();
+                options.OAuthScopes(authOptions.ApiScope);
+                options.EnablePersistAuthorization();
+            });
+        }
 
         return app;
     }
