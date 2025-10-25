@@ -19,8 +19,20 @@ if (builder.Environment.IsProduction())
     // Production mode - use connection string
     Console.WriteLine($"Production mode");
     
+    var connectionString = builder.Configuration.GetConnectionString("TemplateAppDB");
+    Console.WriteLine($"Raw connection string: {connectionString}");
+    
+    // Convert Railway PostgreSQL URL format to Entity Framework format
+    if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgresql://"))
+    {
+        var uri = new Uri(connectionString);
+        var convertedConnectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+        Console.WriteLine($"Converted connection string: {convertedConnectionString}");
+        connectionString = convertedConnectionString;
+    }
+    
     builder.Services.AddDbContext<TemplateAppContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("TemplateAppDB")));
+        options.UseNpgsql(connectionString));
     
     // Add health checks for production
     builder.Services.AddHealthChecks()
