@@ -68,24 +68,6 @@ public static class OpenApiExtensions
     {
         app.MapOpenApi();
 
-        // Check if we're in production mode (no authentication)
-        var isProduction = app.Environment.IsProduction();
-        
-        if (isProduction)
-        {
-            // Production mode - simple Swagger UI without authentication
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/openapi/v1.json", "TemplateApp API v1");
-                options.RoutePrefix = "swagger";
-                options.DocumentTitle = "TemplateApp API";
-                options.DefaultModelsExpandDepth(-1);
-                options.DisplayRequestDuration();
-            });
-        }
-        else
-        {
-            // Development mode - Swagger UI with Keycloak authentication
             var authOptions = app.Services.GetRequiredService<IOptions<AuthOptions>>().Value;
 
             var swaggerUiClientId = app.Configuration["SWAGGERUI_CLIENTID"]
@@ -94,12 +76,14 @@ public static class OpenApiExtensions
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/openapi/v1.json", "TemplateApp API v1");
+
                 options.OAuthClientId(swaggerUiClientId);
+
                 options.OAuthUsePkce();
                 options.OAuthScopes(authOptions.ApiScope);
+
                 options.EnablePersistAuthorization();
             });
-        }
 
         return app;
     }

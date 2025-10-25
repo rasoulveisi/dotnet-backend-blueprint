@@ -114,19 +114,12 @@ app.MapCategories();
 
 app.UseHttpLogging();
 
-// Enable Swagger in both development and production
-app.UseTemplateAppSwaggerUI();
 
-// Add CORS headers for Swagger UI
-app.Use(async (context, next) =>
+if (app.Environment.IsDevelopment())
 {
-    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-    context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    await next();
-});
-
-if (!app.Environment.IsDevelopment())
+    app.UseTemplateAppSwaggerUI();
+}
+else
 {
     app.UseExceptionHandler();
 }

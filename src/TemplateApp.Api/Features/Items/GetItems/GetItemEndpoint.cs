@@ -13,7 +13,6 @@ public static class GetItemsEndpoint
             TemplateAppContext dbContext,
             [AsParameters] GetItemsDto request) =>
         {
-            Console.WriteLine($"GET /items called with PageNumber={request.PageNumber}, PageSize={request.PageSize}, Name={request.Name}");
             var skipCount = (request.PageNumber - 1) * request.PageSize;
 
             var filteredItems = dbContext.Items
