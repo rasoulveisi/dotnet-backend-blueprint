@@ -19,7 +19,7 @@ public static class CorsExtensions
                     // {
                     //     // Try to get AllowedOrigins as an array first
                     //     var allowedOriginsArray = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
-                        
+
                     //     if (allowedOriginsArray != null && allowedOriginsArray.Length > 0)
                     //     {
                     //         Console.WriteLine($"CORS - Allowed origins (array): {string.Join(", ", allowedOriginsArray)}");
@@ -30,7 +30,7 @@ public static class CorsExtensions
                     //         // Fallback: try string format
                     //         var originsString = builder.Configuration["AllowedOrigins"] ?? string.Empty;
                     //         Console.WriteLine($"CORS - AllowedOrigins (string): {originsString}");
-                            
+
                     //         if (!string.IsNullOrEmpty(originsString))
                     //         {
                     //             var allowedOrigins = originsString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -40,28 +40,23 @@ public static class CorsExtensions
                     //         else
                     //         {
                     //             Console.WriteLine("CORS - No whitelist configured, allowing all origins");
-                                // Fallback: allow all origins if no whitelist is configured
-                                policy.AllowAnyOrigin();
+                    // Fallback: allow all origins if no whitelist is configured
+                    policy.AllowAnyOrigin();
                     //         }
                     //     }
                     // }
 
                     policy.WithHeaders(
-                            HeaderNames.Authorization, 
-                            HeaderNames.ContentType, 
-                            "X-Requested-With", 
-                            "Accept", 
+                            HeaderNames.Authorization,
+                            HeaderNames.ContentType,
+                            "X-Requested-With",
+                            "Accept",
                             "Origin",
                             "Access-Control-Request-Method",
                             "Access-Control-Request-Headers"
                         )
-                          .AllowAnyMethod()
-                        .AllowCredentials()
-                        .SetIsOriginAllowed(origin => 
-                        {
-                            Console.WriteLine($"CORS - Checking origin: {origin}");
-                            return true; // Temporarily allow all for debugging
-                        });
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
         });
 
