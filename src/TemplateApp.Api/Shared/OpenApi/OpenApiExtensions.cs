@@ -78,6 +78,9 @@ public static class OpenApiExtensions
             {
                 options.SwaggerEndpoint("/openapi/v1.json", "TemplateApp API v1");
                 options.RoutePrefix = "swagger";
+                options.DocumentTitle = "TemplateApp API";
+                options.DefaultModelsExpandDepth(-1);
+                options.DisplayRequestDuration();
             });
         }
         else
