@@ -91,6 +91,7 @@ builder.AddTemplateAppCors();
 var app = builder.Build();
 
 app.UseCors();
+Console.WriteLine("CORS middleware added");
 
 // Map endpoints conditionally
 if (builder.Environment.IsProduction())
@@ -107,6 +108,9 @@ else
     // Development - use Aspire endpoints
     app.MapDefaultEndpoints();
 }
+
+// Add explicit OPTIONS handling for CORS
+app.MapMethods("/{*path}", new[] { "OPTIONS" }, () => Results.Ok()).AllowAnonymous();
 
 app.MapItems();
 app.MapCategories();
