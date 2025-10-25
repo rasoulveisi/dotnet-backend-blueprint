@@ -18,8 +18,16 @@ public static class CorsExtensions
                     else
                     {
                         var originsString = builder.Configuration["AllowedOrigins"] ?? string.Empty;
-                        var allowedOrigins = originsString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                        policy.WithOrigins(allowedOrigins);
+                        if (!string.IsNullOrEmpty(originsString))
+                        {
+                            var allowedOrigins = originsString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                            policy.WithOrigins(allowedOrigins);
+                        }
+                        else
+                        {
+                            // Fallback: allow all origins if no whitelist is configured
+                            policy.AllowAnyOrigin();
+                        }
                     }
 
                     policy.WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType)
